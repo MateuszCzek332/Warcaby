@@ -1,0 +1,10 @@
+h1{
+    font-size: 40px;
+    text-decoration: underline;
+}
+div{
+    padding: 10px;
+    margin:10px; 
+    background-color: gray;
+    color:blue;
+}
