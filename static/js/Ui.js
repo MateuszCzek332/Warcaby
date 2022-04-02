@@ -1,19 +1,17 @@
 class Ui {
-
+ 
     constructor() {
         this.login = document.getElementById("login");
         this.loginWindow = document.getElementById("loginWindow");
-        // this.logButton = document.getElementById("logButton");
+        this.logButton = document.getElementById("logButton").onclick = () => {
+            net.send(this.login.value)
+        }
         // this.resetButton = document.getElementById("resetButton");
     }
  
-    send() {
-        net.send(this.login.value)
-    }
 
     logMe(data) {
-        console.log(data)
-        // data = JSON.parse(data)
+
         if (data.loged){
             this.loginWindow.style.display = "none";
             game.startGame(data.id)

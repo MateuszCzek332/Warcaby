@@ -1,5 +1,5 @@
 class Net {
- 
+  
     send(login) {
 
         console.log(login)

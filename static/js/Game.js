@@ -1,5 +1,5 @@
 class Game {
- 
+  
     constructor() {
 
         this.scene = new THREE.Scene();
@@ -15,7 +15,7 @@ class Game {
         this.scene.add(axes)
         document.getElementById("root").append(this.renderer.domElement);
         this.init()
-        this.render() // wywołanie metody render
+        this.render() 
 
     }
 
@@ -50,79 +50,41 @@ class Game {
     }
 
     generateBoard = () => {
-        const geometry = new THREE.BoxGeometry(100, 30, 100);
-
-        const material = new THREE.MeshBasicMaterial({
-            //color: 0xffffff,
-            side: THREE.DoubleSide, // dwustronny
-            map: new THREE.TextureLoader().load('mats/pole2.jpg'), // plik tekstury
-            transparent: true, // przezroczysty / nie
-            opacity: 0.95, // stopień przezroczystości
-        })
-
-        const material2 = new THREE.MeshBasicMaterial({
-            //color: 0x000000,
-            side: THREE.DoubleSide, // dwustronny
-            map: new THREE.TextureLoader().load('mats/pole1.jpg'), // plik tekstury
-            transparent: true, // przezroczysty / nie
-            opacity: 0.95, // stopień przezroczystości
-        })
-
-        // const cube = new THREE.Mesh(geometry, material);
-        // this.scene.add(cube);
 
         for (let i = 0; i < this.szachownica.length; i++)
             for (let j = 0; j < this.szachownica[i].length; j++) {
                 if (this.szachownica[i][j] == 0) {
-                    const cube = new THREE.Mesh(geometry, material);
-                    cube.position.set(i * 100 - 350, 0, j * 100 - 350)
-                    this.scene.add(cube);
+                    let pole = new Pole(false)
+                    pole.container.position.set(i * 100 - 350, 0, j * 100 - 350)
+                    this.scene.add(pole.getPole())
                 }
                 else {
-                    const cube = new THREE.Mesh(geometry, material2);
-                    cube.position.set(i * 100 - 350, 0, j * 100 - 350)
-                    this.scene.add(cube);
+                    let pole = new Pole(true)
+                    pole.container.position.set(i * 100 - 350, 0, j * 100 - 350)
+                    this.scene.add(pole.getPole())
                 }
             }
+
     }
 
     startGame(id_gracza){
-        //tymczasowo
-        const geometry = new THREE.CylinderGeometry( 40, 40, 15, 32 )
 
-        const material = new THREE.MeshBasicMaterial({
-            //color: 0xffffff,
-            side: THREE.DoubleSide, // dwustronny
-            map: new THREE.TextureLoader().load('mats/pion1.jpg'), // plik tekstury
-            transparent: true, // przezroczysty / nie
-            opacity: 0.95, // stopień przezroczystości
-        })
-
-        const material2 = new THREE.MeshBasicMaterial({
-            //color: 0x000000,
-            side: THREE.DoubleSide, // dwustronny
-            map: new THREE.TextureLoader().load('mats/pion2.jpg'), // plik tekstury
-            transparent: true, // przezroczysty / nie
-            opacity: 0.95, // stopień przezroczystości
-        })
-
-        
         if(id_gracza == 2){
-            this.camera.position.set(0, 400, -800)
+            this.camera.position.z *= -1;
             this.camera.lookAt(this.scene.position)
         }
 
         for(let i=0; i<this.pionki.length; i++){
             for(let j=0; j<this.pionki[i].length; j++)
                 if(this.pionki[j][i] == 2){
-                    const cube = new THREE.Mesh(geometry, material);
-                    cube.position.set(i * 100 - 350, 30, j * 100 - 350)
-                    this.scene.add(cube);
+                    let pion = new Pionek(false)
+                    pion.container.position.set(i * 100 - 350, 30, j * 100 - 350)
+                    this.scene.add(pion.getPion())
                 }
                 else if(this.pionki[j][i] == 1){
-                    const cube = new THREE.Mesh(geometry, material2);
-                    cube.position.set(i * 100 - 350, 30, j * 100 - 350)
-                    this.scene.add(cube);
+                    let pion = new Pionek(true)
+                    pion.container.position.set(i * 100 - 350, 30, j * 100 - 350)
+                    this.scene.add(pion.getPion())
                 }
         }
 
