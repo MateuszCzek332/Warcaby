@@ -20,6 +20,10 @@ app.post("/ADD_USER", function (req, res) {
  
 })
 
+app.post("/CHECK_STATUS", function (req, res) {
+    res.send({users: users.length})  
+})
+
 app.use(express.static('static'))
 
 app.listen(PORT, function () {

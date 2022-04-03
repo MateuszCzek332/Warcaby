@@ -15,4 +15,17 @@ class Net {
             .catch(error => console.log(error));
     }
 
+    checkStatus() {
+
+        const options = {
+            method: "POST",
+            body: ""
+        };
+
+        fetch("/CHECK_STATUS", options)
+            .then(response => response.json())
+            .then(users => ui.status(users))
+            .catch(error => console.log(error));
+    }
+
 }

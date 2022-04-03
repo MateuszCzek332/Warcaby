@@ -67,9 +67,9 @@ class Game {
 
     }
 
-    startGame(id_gracza){
+    startGame(){
 
-        if(id_gracza == 2){
+        if(this.idGracza == 2){
             this.camera.position.z *= -1;
             this.camera.lookAt(this.scene.position)
         }
