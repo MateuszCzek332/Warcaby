@@ -15,12 +15,18 @@ class Pionek {
             opacity: 0.95,
         })
 
-        if(bialy)
+        if(bialy){
             material.map = new THREE.TextureLoader().load('mats/pion2.jpg')
-        else 
+            material.color = { r:150, g:150, b:150}
+        }
+        else{ 
             material.map = new THREE.TextureLoader().load('mats/pion1.jpg')
+            material.color = { r:1, g:1, b:1}
+        }
 
         this.cylinder = new THREE.Mesh(geometry, material);
+        this.cylinder.name = "pion"
+
 
         this.container.add(this.cylinder)
     }

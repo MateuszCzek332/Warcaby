@@ -5,6 +5,8 @@ class Game {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(45, 4 / 3, 0.1, 10000);
         this.renderer = new THREE.WebGLRenderer();
+        this.raycaster = new THREE.Raycaster();
+        this.mouseVector = new THREE.Vector2()
         this.renderer.setClearColor(0xffffff);
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.position.set(0, 400, 800)
@@ -16,6 +18,24 @@ class Game {
         document.getElementById("root").append(this.renderer.domElement);
         this.init()
         this.render() 
+
+        this.selected = null
+
+        document.onmousedown = (event) => {
+
+            this.mouseVector.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            this.raycaster.setFromCamera(this.mouseVector, this.camera);
+
+            const intersects = this.raycaster.intersectObjects(this.scene.children);  
+
+            if (intersects.length > 0 && intersects[0].object.name == "pion") {
+                this.selectPion(intersects[0].object)
+            }
+            else if(intersects.length > 0 && intersects[0].object.name == "pole" && this.selected != null)
+                this.movePion(intersects[0].object)
+        }
 
     }
 
@@ -70,9 +90,12 @@ class Game {
     startGame(){
 
         if(this.idGracza == 2){
+            this.myColor = { r:1, g:1, b:1}
             this.camera.position.z *= -1;
             this.camera.lookAt(this.scene.position)
         }
+        else
+            this.myColor = { r:150, g:150, b:150}
 
         for(let i=0; i<this.pionki.length; i++){
             for(let j=0; j<this.pionki[i].length; j++)
@@ -88,6 +111,26 @@ class Game {
                 }
         }
 
+    }
+
+    selectPion(pionek){
+        console.log(this.myColor)
+        console.log(pionek.material.color)
+        if(pionek.material.color.r == this.myColor.r && pionek.material.color.g == this.myColor.g && pionek.material.color.b == this.myColor.b){
+            if(this.selected != null)
+                this.selected.material.color = this.myColor
+
+            pionek.material.color = { r: 255, g:255, b:0 }
+            this.selected = pionek
+        }
+    }
+
+    movePion(pole){
+        console.log(pole.parent.position.x, pole.parent.position.z)
+
+        this.selected.parent.position.set(pole.parent.position.x, 30, pole.parent.position.z)
+        this.selected.material.color = this.myColor
+        this.selected = null
     }
 
     render = () => {

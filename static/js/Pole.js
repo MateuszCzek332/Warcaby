@@ -1,11 +1,12 @@
 class Pole {
 
-    constructor(biale) {
+    constructor(czarne) {
         this.container = new THREE.Object3D();
-        this.init(biale)
+        this.container.name = "pole"
+        this.init(czarne)
     }
 
-    init(biale) {
+    init(czarne) {
 
         const geometry = new THREE.BoxGeometry(100, 30, 100);
 
@@ -16,12 +17,13 @@ class Pole {
             opacity: 0.95,
         })
 
-        if(biale)
+        if(czarne)
             material.map = new THREE.TextureLoader().load('mats/pole1.jpg')
         else 
             material.map = new THREE.TextureLoader().load('mats/pole2.jpg')
 
         this.cube = new THREE.Mesh(geometry, material);
+        this.cube.name = "pole"
 
         this.container.add(this.cube)
     }
