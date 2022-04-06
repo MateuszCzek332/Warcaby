@@ -10,7 +10,6 @@ class Pionek {
 
         let material = new THREE.MeshBasicMaterial({
             side: THREE.DoubleSide, 
-            //map: new THREE.TextureLoader().load('mats/pion1.jpg'), 
             transparent: true, 
             opacity: 0.95,
         })
@@ -26,7 +25,6 @@ class Pionek {
 
         this.cylinder = new THREE.Mesh(geometry, material);
         this.cylinder.name = "pion"
-
 
         this.container.add(this.cylinder)
     }

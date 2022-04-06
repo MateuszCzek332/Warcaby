@@ -28,4 +28,28 @@ class Net {
             .catch(error => console.log(error));
     }
 
+    checkCurrTab(plansza){
+        const options = {
+            method: "POST",
+            body: plansza
+        };
+
+        fetch("/CHECK_TAB", options)
+            .then(response => response.json())
+            .then(odp => game.waitForEnemy(odp))
+            .catch(error => console.log(error));
+    }
+
+    updateCurrTab(plansza){
+        const options = {
+            method: "POST",
+            body: JSON.stringify(plansza)
+        };
+
+        fetch("/UPDATE_TAB", options)
+            .then(response => response.json())
+            .then(odp => console.log(odp))
+            .catch(error => console.log(error));
+    }
+
 }
