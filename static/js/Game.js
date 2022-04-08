@@ -18,24 +18,6 @@ class Game {
         document.getElementById("root").append(this.renderer.domElement);
         this.init()
         this.render() 
-
-        this.selected = null
-        document.onmousedown = (event) => {
-
-            this.mouseVector.x = (event.clientX / window.innerWidth) * 2 - 1;
-            this.mouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-            this.raycaster.setFromCamera(this.mouseVector, this.camera);
-
-            const intersects = this.raycaster.intersectObjects(this.scene.children);  
-
-            if (intersects.length > 0 && intersects[0].object.name == "pion") {
-                this.selectPion(intersects[0].object)
-            }
-            else if(intersects.length > 0 && intersects[0].object.name == "pole" && this.selected != null)
-                this.movePion(intersects[0].object)
-        }
-
     }
 
     init() {
@@ -66,6 +48,24 @@ class Game {
         ];
 
         this.generateBoard();
+
+        this.selected = null
+        document.onmousedown = (event) => {
+
+            this.mouseVector.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            this.raycaster.setFromCamera(this.mouseVector, this.camera);
+
+            const intersects = this.raycaster.intersectObjects(this.scene.children);  
+
+            if (intersects.length > 0 && intersects[0].object.name == "pion") {
+                this.selectPion(intersects[0].object)
+            }
+            else if(intersects.length > 0 && intersects[0].object.name == "pole" && this.selected != null)
+                this.movePion(intersects[0].object)
+        }
+
     }
 
     generateBoard = () => {
@@ -110,10 +110,13 @@ class Game {
             this.camera.lookAt(this.scene.position)
             net.checkCurrTab(this.pionki)
             this.move = false
+            this.enemyTime = 30
         }
         else{
             this.myColor = { r:150, g:150, b:150}
             this.move = true
+            this.myTime = 30
+            this.timer = setInterval(this.myTimer, 1000)
         }
 
         this.generatePionki()
@@ -146,14 +149,17 @@ class Game {
         this.selected = null
 
         this.move = false
-        net.updateCurrTab(this.pionki)
+        clearInterval(this.timer)
+        this.enemyTime = 30
         this.waitForEnemy( {val: false} )
+        net.updateCurrTab(this.pionki)
         
     }
 
     waitForEnemy(odp){
         if(odp.val){
-            this.pionki = odp.newTab
+            this.pionki = odp.newTab;
+            this.enemyTime = 30;
             console.log(this.scene.children)
 
             for(let i=1; i<this.scene.children.length; i++){
@@ -165,9 +171,37 @@ class Game {
             }
             this.generatePionki()
             this.move = true
+            this.myTime = 30
+            this.timer = setInterval(this.myTimer, 1000)
+
         }
         else
-            setTimeout(net.checkCurrTab(this.pionki),1000)
+            setTimeout( () => {
+                if(this.enemyTime<0)
+                    this.end(true)
+                else{
+                    net.checkCurrTab(this.pionki)
+                    this.enemyTime--
+                    ui.enemyTur(this.enemyTime)
+                }
+            },999)
+
+    }
+
+    myTimer = () =>{
+        if(this.myTime<0){
+            this.move = false
+            clearInterval(this.timer)
+            this.end(false)
+        }
+        else{
+            this.myTime--
+            ui.myTur(this.myTime)
+        }
+    }
+
+    end(win){
+        ui.gg(win)
     }
 
     render = () => {
