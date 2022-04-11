@@ -50,6 +50,7 @@ class Game {
         this.generateBoard();
 
         this.selected = null
+        this.highlight = []
         document.onmousedown = (event) => {
 
             this.mouseVector.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -129,8 +130,18 @@ class Game {
                 if(this.selected != null)
                     this.selected.material.color = this.myColor
 
+                this.highlight.forEach(el => {
+                    el.material.color = { r: 1, g:1, b:1 }
+                });
+                this.highlight.length = 0;
+
+
                 pionek.material.color = { r: 255, g:255, b:0 }
                 this.selected = pionek
+
+                let y = (this.selected.parent.position.x + 350) / 100
+                let x = (this.selected.parent.position.z + 350) / 100
+                this.checkMove(x, y)
             }
         }
     }
@@ -138,22 +149,73 @@ class Game {
     movePion(pole){
         let y = (this.selected.parent.position.x + 350) / 100
         let x = (this.selected.parent.position.z + 350) / 100
-        this.pionki[x][y] = 0
     
         let y2 = (pole.parent.position.x + 350) / 100
         let x2 = (pole.parent.position.z + 350) / 100
-        this.pionki[x2][y2] = this.idGracza
 
-        this.selected.parent.position.set(pole.parent.position.x, 30, pole.parent.position.z)
-        this.selected.material.color = this.myColor
-        this.selected = null
+        if(pole.material.color.r == 0 && pole.material.color.g == 128 && pole.material.color.b == 0){
+            this.pionki[x][y] = 0
+            this.pionki[x2][y2] = this.idGracza
 
-        this.move = false
-        clearInterval(this.timer)
-        this.enemyTime = 30
-        this.waitForEnemy( {val: false} )
-        net.updateCurrTab(this.pionki)
+            this.selected.parent.position.set(pole.parent.position.x, 30, pole.parent.position.z)
+            this.selected.material.color = this.myColor
+            this.selected = null
+
+            this.highlight.forEach(el => {
+                el.material.color = { r: 1, g:1, b:1 }
+            });
+            this.highlight.length = 0;
+
+            this.move = false
+            clearInterval(this.timer)
+            this.enemyTime = 30
+            this.waitForEnemy( {val: false} )
+            net.updateCurrTab(this.pionki)
+        }
         
+    }
+
+    checkMove(x,y){
+
+        this.scene.children.forEach(el => {
+            if(el.children.length > 0 && el.children[0].name == "pole")
+                switch(true){
+                    case this.idGracza == 1 && y-1>=0 && this.pionki[x-1][y-1] == 0 && el.position.z == (x-1)*100 -350 && el.position.x == (y-1)*100 -350:
+                        el.children[0].material.color = {r:0, g:128, b:0}
+                        this.highlight.push(el.children[0])
+                    case this.idGracza == 1 && this.pionki[x-1][y+1] == 0 && el.position.z == (x-1)*100 -350 && el.position.x == (y+1)*100 -350:
+                        el.children[0].material.color = {r:0, g:128, b:0}
+                        this.highlight.push(el.children[0])
+                    case this.idGracza == 2 && y-1>=0 && this.pionki[x+1][y-1] == 0 && el.position.z == (x+1)*100 -350 && el.position.x == (y-1)*100 -350:
+                        el.children[0].material.color = {r:0, g:128, b:0}
+                        this.highlight.push(el.children[0])
+                    case this.idGracza == 2 && this.pionki[x+1][y+1] == 0 && el.position.z == (x+1)*100 -350 && el.position.x == (y+1)*100 -350:
+                        el.children[0].material.color = {r:0, g:128, b:0}
+                        this.highlight.push(el.children[0])        
+                }
+        });
+
+        // switch(true){
+        //     case this.idGracza == 1 && this.szachownica[x-1][y-1] == 0:
+        //         this.scene.children.forEach(el => {
+        //             if(el.children.length>0 && el.children[0].name == "pole" && el.position.z == (x-1)*100 -350 && el.position.x == (y+1)*100 -350){
+        //                 el.children[0].material.color = {r:0, g:128, b:0}
+        //                 this.highlight.push(el.children[0])
+        //             }
+        //         });
+        //     case this.idGracza == 1 && this.szachownica[x+1][y+1] == 0:
+        //     case this.idGracza == 2:
+        //     case this.idGracza == 2:
+        // }
+
+        // if(this.szachownica[x2][y2] == 0 && this.pionki[x2][y2] == 0){
+        //     if(this.idGracza == 1 && x == x2+1 && ( y==y2-1 || y==y2+1))
+        //         return true
+        //     else if(this.idGracza == 2 && x == x2-1 && ( y==y2-1 || y==y2+1))
+        //         return true
+        // }
+        // else
+        //     return false;
     }
 
     waitForEnemy(odp){
