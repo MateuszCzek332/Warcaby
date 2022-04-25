@@ -1,5 +1,5 @@
 class Game {
-  
+
     constructor() {
 
         this.scene = new THREE.Scene();
@@ -17,7 +17,7 @@ class Game {
         this.scene.add(axes)
         document.getElementById("root").append(this.renderer.domElement);
         this.init()
-        this.render() 
+        this.render()
     }
 
     init() {
@@ -58,12 +58,12 @@ class Game {
 
             this.raycaster.setFromCamera(this.mouseVector, this.camera);
 
-            const intersects = this.raycaster.intersectObjects(this.scene.children);  
+            const intersects = this.raycaster.intersectObjects(this.scene.children);
 
             if (intersects.length > 0 && intersects[0].object.name == "pion") {
                 this.selectPion(intersects[0].object)
             }
-            else if(intersects.length > 0 && intersects[0].object.name == "pole" && this.selected != null)
+            else if (intersects.length > 0 && intersects[0].object.name == "pole" && this.selected != null)
                 this.movePion(intersects[0].object)
         }
 
@@ -87,15 +87,15 @@ class Game {
 
     }
 
-    generatePionki(){
-        for(let i=0; i<this.pionki.length; i++){
-            for(let j=0; j<this.pionki[i].length; j++)
-                if(this.pionki[j][i] == 2){
+    generatePionki() {
+        for (let i = 0; i < this.pionki.length; i++) {
+            for (let j = 0; j < this.pionki[i].length; j++)
+                if (this.pionki[j][i] == 2) {
                     let pion = new Pionek(false)
                     pion.container.position.set(i * 100 - 350, 30, j * 100 - 350)
                     this.scene.add(pion.getPion())
                 }
-                else if(this.pionki[j][i] == 1){
+                else if (this.pionki[j][i] == 1) {
                     let pion = new Pionek(true)
                     pion.container.position.set(i * 100 - 350, 30, j * 100 - 350)
                     this.scene.add(pion.getPion())
@@ -103,18 +103,18 @@ class Game {
         }
     }
 
-    startGame(){
+    startGame() {
 
-        if(this.idGracza == 2){
-            this.myColor = { r:1, g:1, b:1}
+        if (this.idGracza == 2) {
+            this.myColor = { r: 1, g: 1, b: 1 }
             this.camera.position.z *= -1;
             this.camera.lookAt(this.scene.position)
             net.checkCurrTab(this.pionki)
             this.move = false
             this.enemyTime = 30
         }
-        else{
-            this.myColor = { r:150, g:150, b:150}
+        else {
+            this.myColor = { r: 150, g: 150, b: 150 }
             this.move = true
             this.myTime = 30
             this.timer = setInterval(this.myTimer, 1000)
@@ -124,36 +124,37 @@ class Game {
 
     }
 
-    selectPion(pionek){
-        if(this.move){
-            if(pionek.material.color.r == this.myColor.r && pionek.material.color.g == this.myColor.g && pionek.material.color.b == this.myColor.b){
-                if(this.selected != null)
-                    this.selected.material.color = this.myColor
+    selectPion(pionek) {
 
-                this.highlight.forEach(el => {
-                    el.material.color = { r: 1, g:1, b:1 }
-                });
-                this.highlight.length = 0;
+        if (this.move && pionek.material.color.r == this.myColor.r && pionek.material.color.g == this.myColor.g && pionek.material.color.b == this.myColor.b) {
+            if (this.selected != null)
+                this.selected.material.color = this.myColor
 
+            this.highlight.forEach(el => {
+                el.material.color = { r: 1, g: 1, b: 1 }
+            });
+            this.highlight.length = 0;
 
-                pionek.material.color = { r: 255, g:255, b:0 }
-                this.selected = pionek
+            pionek.material.color = { r: 255, g: 255, b: 0 }
+            this.selected = pionek
 
-                let y = (this.selected.parent.position.x + 350) / 100
-                let x = (this.selected.parent.position.z + 350) / 100
-                this.checkMove(x, y)
-            }
+            let y = (this.selected.parent.position.x + 350) / 100
+            let x = (this.selected.parent.position.z + 350) / 100
+            this.checkMove(x, y)
         }
+
     }
 
-    movePion(pole){
-        let y = (this.selected.parent.position.x + 350) / 100
-        let x = (this.selected.parent.position.z + 350) / 100
-    
-        let y2 = (pole.parent.position.x + 350) / 100
-        let x2 = (pole.parent.position.z + 350) / 100
+    movePion(pole) {
 
-        if(pole.material.color.r == 0 && pole.material.color.g == 128 && pole.material.color.b == 0){
+        if (pole.material.color.r == 0 && pole.material.color.g == 128 && pole.material.color.b == 0) {
+
+            let y = (this.selected.parent.position.x + 350) / 100
+            let x = (this.selected.parent.position.z + 350) / 100
+
+            let y2 = (pole.parent.position.x + 350) / 100
+            let x2 = (pole.parent.position.z + 350) / 100
+
             this.pionki[x][y] = 0
             this.pionki[x2][y2] = this.idGracza
 
@@ -161,72 +162,99 @@ class Game {
             this.selected.material.color = this.myColor
             this.selected = null
 
+            switch (true) {
+                case x + 2 == x2 && y + 2 == y2:
+                    this.pionki[x + 1][y + 1] = 0
+                    this.bicie(x + 1, y + 1)
+                    break;
+                case x + 2 == x2 && y - 2 == y2:
+                    this.pionki[x + 1][y - 1] = 0
+                    this.bicie(x + 1, y - 1)
+                    break;
+                case x - 2 == x2 && y + 2 == y2:
+                    this.pionki[x - 1][y + 1] = 0
+                    this.bicie(x - 1, y + 1)
+                    break;
+                case x - 2 == x2 && y - 2 == y2:
+                    this.pionki[x - 1][y - 1] = 0
+                    this.bicie(x - 1, y - 1)
+                    break;
+            }
+
             this.highlight.forEach(el => {
-                el.material.color = { r: 1, g:1, b:1 }
+                el.material.color = { r: 1, g: 1, b: 1 }
             });
             this.highlight.length = 0;
 
             this.move = false
             clearInterval(this.timer)
             this.enemyTime = 30
-            this.waitForEnemy( {val: false} )
+            this.waitForEnemy({ val: false })
             net.updateCurrTab(this.pionki)
         }
-        
+
     }
 
-    checkMove(x,y){
+    bicie(x, y) {
+        this.scene.children.forEach(el => {
+            if (el.children.length > 0 && el.children[0].name == "pion" && el.position.x == y * 100 - 350 && el.position.z == x * 100 - 350)
+                this.scene.remove(el)
+        });
+    }
+
+    checkMove(x, y) {
 
         this.scene.children.forEach(el => {
-            if(el.children.length > 0 && el.children[0].name == "pole")
-                switch(true){
-                    case this.idGracza == 1 && y-1>=0 && this.pionki[x-1][y-1] == 0 && el.position.z == (x-1)*100 -350 && el.position.x == (y-1)*100 -350:
-                        el.children[0].material.color = {r:0, g:128, b:0}
-                        this.highlight.push(el.children[0])
-                    case this.idGracza == 1 && this.pionki[x-1][y+1] == 0 && el.position.z == (x-1)*100 -350 && el.position.x == (y+1)*100 -350:
-                        el.children[0].material.color = {r:0, g:128, b:0}
-                        this.highlight.push(el.children[0])
-                    case this.idGracza == 2 && y-1>=0 && this.pionki[x+1][y-1] == 0 && el.position.z == (x+1)*100 -350 && el.position.x == (y-1)*100 -350:
-                        el.children[0].material.color = {r:0, g:128, b:0}
-                        this.highlight.push(el.children[0])
-                    case this.idGracza == 2 && this.pionki[x+1][y+1] == 0 && el.position.z == (x+1)*100 -350 && el.position.x == (y+1)*100 -350:
-                        el.children[0].material.color = {r:0, g:128, b:0}
-                        this.highlight.push(el.children[0])        
+            if (el.children.length > 0 && el.children[0].name == "pole")
+                if(this.idGracza == 1){
+                    switch (true) {
+                        //ruch bialego
+                        case y - 1 >= 0 && this.pionki[x - 1][y - 1] == 0 && el.position.z == (x - 1) * 100 - 350 && el.position.x == (y - 1) * 100 - 350:
+                            el.children[0].material.color = { r: 0, g: 128, b: 0 }
+                            this.highlight.push(el.children[0])
+                        case this.pionki[x - 1][y + 1] == 0 && el.position.z == (x - 1) * 100 - 350 && el.position.x == (y + 1) * 100 - 350:
+                            el.children[0].material.color = { r: 0, g: 128, b: 0 }
+                            this.highlight.push(el.children[0])
+                        //bicie bialego
+                        case y - 1 >= 1 && this.pionki[x - 1][y - 1] == 2 && this.pionki[x - 2][y - 2] == 0 && el.position.z == (x - 2) * 100 - 350 && el.position.x == (y - 2) * 100 - 350:
+                            el.children[0].material.color = { r: 0, g: 128, b: 0 }
+                            this.highlight.push(el.children[0])
+                        case this.pionki[x - 1][y + 1] == 2 && this.pionki[x - 2][y + 2] == 0 && el.position.z == (x - 2) * 100 - 350 && el.position.x == (y + 2) * 100 - 350:
+                            el.children[0].material.color = { r: 0, g: 128, b: 0 }
+                            this.highlight.push(el.children[0])
+                    }
                 }
+                else{
+                    switch (true) {
+                        //ruch czarnego
+                        case y - 1 >= 0 && this.pionki[x + 1][y - 1] == 0 && el.position.z == (x + 1) * 100 - 350 && el.position.x == (y - 1) * 100 - 350:
+                            el.children[0].material.color = { r: 0, g: 128, b: 0 }
+                            this.highlight.push(el.children[0])
+                        case this.pionki[x + 1][y + 1] == 0 && el.position.z == (x + 1) * 100 - 350 && el.position.x == (y + 1) * 100 - 350:
+                            el.children[0].material.color = { r: 0, g: 128, b: 0 }
+                            this.highlight.push(el.children[0])
+                        //bicie czarnego
+                        case y - 1 >= 1 && this.pionki[x + 1][y - 1] == 1 && this.pionki[x + 2][y - 2] == 0 && el.position.z == (x + 2) * 100 - 350 && el.position.x == (y - 2) * 100 - 350:
+                            el.children[0].material.color = { r: 0, g: 128, b: 0 }
+                            this.highlight.push(el.children[0])
+                        case this.pionki[x + 1][y + 1] == 1 && this.pionki[x + 2][y + 2] == 0 && el.position.z == (x + 2) * 100 - 350 && el.position.x == (y + 2) * 100 - 350:
+                            el.children[0].material.color = { r: 0, g: 128, b: 0 }
+                            this.highlight.push(el.children[0])
+                }
+            }
         });
 
-        // switch(true){
-        //     case this.idGracza == 1 && this.szachownica[x-1][y-1] == 0:
-        //         this.scene.children.forEach(el => {
-        //             if(el.children.length>0 && el.children[0].name == "pole" && el.position.z == (x-1)*100 -350 && el.position.x == (y+1)*100 -350){
-        //                 el.children[0].material.color = {r:0, g:128, b:0}
-        //                 this.highlight.push(el.children[0])
-        //             }
-        //         });
-        //     case this.idGracza == 1 && this.szachownica[x+1][y+1] == 0:
-        //     case this.idGracza == 2:
-        //     case this.idGracza == 2:
-        // }
-
-        // if(this.szachownica[x2][y2] == 0 && this.pionki[x2][y2] == 0){
-        //     if(this.idGracza == 1 && x == x2+1 && ( y==y2-1 || y==y2+1))
-        //         return true
-        //     else if(this.idGracza == 2 && x == x2-1 && ( y==y2-1 || y==y2+1))
-        //         return true
-        // }
-        // else
-        //     return false;
     }
 
-    waitForEnemy(odp){
-        if(odp.val){
+    waitForEnemy(odp) {
+        if (odp.val) {
             this.pionki = odp.newTab;
             this.enemyTime = 30;
             console.log(this.scene.children)
 
-            for(let i=1; i<this.scene.children.length; i++){
+            for (let i = 1; i < this.scene.children.length; i++) {
                 let el = this.scene.children[i]
-                if(el.children.length>0 && el.children[0].geometry.type == "CylinderGeometry"){
+                if (el.children.length > 0 && el.children[0].geometry.type == "CylinderGeometry") {
                     this.scene.remove(el)
                     i--
                 }
@@ -238,31 +266,32 @@ class Game {
 
         }
         else
-            setTimeout( () => {
-                if(this.enemyTime<0)
+            setTimeout(() => {
+                if (this.enemyTime < 0)
                     this.end(true)
-                else{
+                else {
                     net.checkCurrTab(this.pionki)
                     this.enemyTime--
                     ui.enemyTur(this.enemyTime)
                 }
-            },999)
+            }, 999)
 
     }
 
-    myTimer = () =>{
-        if(this.myTime<0){
+    myTimer = () => {
+        if (this.myTime < 0) {
             this.move = false
             clearInterval(this.timer)
             this.end(false)
         }
-        else{
+        else {
             this.myTime--
             ui.myTur(this.myTime)
         }
     }
 
-    end(win){
+    end(win) {
+        net.reset()
         ui.gg(win)
     }
 

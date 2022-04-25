@@ -1,9 +1,9 @@
 h1{
     font-size: 40px;
 }
-#enemyTur, #myTur{
+#enemyTur, #myTur, #waitingRoom, #endGame{
     display: none;
     position: absolute;
     left: 40%;
-    top: 50%;
+    top: 5%;
 }
